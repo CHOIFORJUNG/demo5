@@ -488,7 +488,7 @@
 
     $(document).ready(function () {
 
-        var boardNo = [[${BoardVO.boardNo}]];
+        var boardNo = [[${readVO.boardNo}]];
 
         $.getJSON("/replies/all/" + boardNo, function (data) {
             console.log("결과는 = " + JSON.stringify(data));
@@ -515,7 +515,7 @@
         var reWriter = $("#writer").val();
         console.log("글쓴이=" + reWriter);
         var reContents = $("#contents").val();
-        var boardNo = [[${BoardVO.boardNo}]]; //타임리프형식으로 써줘야한다.
+        var boardNo = [[${readVO.boardNo}]]; //타임리프형식으로 써줘야한다.
         $.ajax({
             type: 'post',
             url: '/replies',
