@@ -56,5 +56,11 @@
         where board_no = #{board_no}
     </update>
 
+    <update id="updateReplyCnt">
+        update board
+        set reply_cnt = reply_cnt + #{amount}
+        where board_no = #{boardNo}
+    </update>
+
 
 </mapper>

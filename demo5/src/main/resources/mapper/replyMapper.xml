@@ -10,13 +10,41 @@
     </resultMap>
 
     <select id="replyList" parameterType="com.example.demo5.vo.ReplyVO" resultMap="rvo">
-        select * from reply
+        select *
+        from reply
         where board_no = #{boardNo}
     </select>
 
     <insert id="replyInsert" parameterType="com.example.demo5.vo.ReplyVO">
-        insert into reply(reply_contents, reply_writer)
-        values (#{replyContents}, #{replyWriter})
-        where board_no = #{boardNo}
+        insert into reply(board_no, reply_contents, reply_writer)
+        values (#{boardNo}, #{replyContents}, #{replyWriter})
     </insert>
+
+    <delete id="replyDelete" parameterType="com.example.demo5.vo.ReplyVO">
+        delete
+        from reply
+        where reply_no = #{replyNo}
+    </delete>
+
+    <update id="replyUpdate" parameterType="com.example.demo5.vo.ReplyVO">
+        update reply
+        set reply_contents = #{replyContents}
+        where reply_no = #{replyNo}
+
+    </update>
+
+    <select id="getBoardNo" resultType="int">
+        select board_no
+        from reply
+        where reply_no = #{replyNo}
+    </select>
+
+    <update id="replyCnt" parameterType="com.example.demo5.vo.ReplyVO">
+        update reply
+        set reply_cnt = #{replyCnt}
+        where reply_no = #{replyNo}
+    </update>
+
+
+    <!--    왜 여기선 보드넘 where 안주는거야-->
 </mapper>

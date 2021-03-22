@@ -46,4 +46,33 @@ public class ReplyController {
         }
         return entity;
     }
+
+    @RequestMapping(value = "/delete/{replyNo}", method = RequestMethod.DELETE)
+    public ResponseEntity<String> replyDelete(@PathVariable("replyNo") int replyNo) {
+
+        ResponseEntity<String> entity = null;
+        try {
+            rsvc.replyDelete(replyNo);
+            entity = new ResponseEntity<String>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return entity;
+    }
+
+    @RequestMapping(value = "/update/{replyNo}", method = RequestMethod.PUT)
+    public ResponseEntity<String> replyUpdate(@PathVariable("replyNo") int replyNo, @RequestBody ReplyVO rvo) {
+
+        ResponseEntity<String> entity = null;
+        try {
+            rvo.setReplyNo(replyNo);
+            rsvc.replyUpdate(rvo);
+            entity = new ResponseEntity<String>("Success", HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace();
+            entity = new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        return entity;
+    }
 }

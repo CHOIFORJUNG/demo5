@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo5.dao.MemberDAO">
+
+    <resultMap type="com.example.demo5.vo.MemberVO" id="mvo">
+        <result column="user_id" property="userId"/>
+        <result column="user_pass" property="userPass"/>
+        <result column="user_name" property="userName"/>
+        <result column="user_phone" property="userPhone"/>
+        <result column="user_mail" property="userMail"/>
+    </resultMap>
+
+    <insert id="insertMember">
+        insert into member (user_id, user_pass, user_name, user_mail, user_phone) values
+        (#{userId},#{userPass},#{userName},#{userMail},#{userPhone})
+    </insert>
+    
+    <select id="signinMember" resultMap="mvo">
+        select * from member where user_id = #{userId}
+    </select>
+
+
+</mapper>

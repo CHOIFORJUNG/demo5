@@ -7,10 +7,10 @@ import java.util.Date;
 @Data
 public class BoardVO {
 
-    private int boardNo;
+    private Integer boardNo;
     private int viewCnt;
     private Date regDate;
-    private int replyCnt;
+    private Integer replyCnt;
     private String userId;
     private String boardTitle;
     private String boardContents;

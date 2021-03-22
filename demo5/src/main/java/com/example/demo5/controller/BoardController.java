@@ -42,7 +42,6 @@ public class BoardController {
         model.addAttribute("readVO", bsvc.read(boardNo));
                 return "thymeleaf/read";
     }
-
     @RequestMapping(value = "/delete", method = {RequestMethod.GET, RequestMethod.POST})
     public String delete(int boardNo, RedirectAttributes attr){
         bsvc.delete(boardNo);

@@ -9,4 +9,8 @@ public interface ReplyService {
     void replyInsert(ReplyVO rvo);
 
     List<ReplyVO> replyList(int boardNo);
+
+    void replyDelete(int replyNo);
+
+    void replyUpdate(ReplyVO rvo);
 }

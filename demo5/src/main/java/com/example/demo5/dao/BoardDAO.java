@@ -18,4 +18,6 @@ public interface BoardDAO {
 
     void viewUp(int boardNo);
 
+    void updateReplyCnt(Integer boardNo, int amount);
+
 }

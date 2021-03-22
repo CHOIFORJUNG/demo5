@@ -382,13 +382,13 @@
                                     [[${readVO.boardContents}]]
                                 </div>
                             </div>
-                            <a href="#" class="btn btn-danger btn-icon-split">
+                            <a href="#" class="btn btn-danger">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-trash"></i>
                                         </span>
                                 <span class="text" th:onclick="deleteBoard([[${readVO.boardNo}]])">삭제하기</span>
                             </a>
-                            <a href="#" class="btn btn-warning btn-icon-split">
+                            <a href="#" class="btn btn-warning">
                                         <span class="icon text-white-50">
                                             <i class="fas fa-exclamation-triangle"></i>
                                         </span>
@@ -397,7 +397,6 @@
 
                             <hr>
                             <div>
-                                <h2>댓글목록</h2>
                                 <!-- 댓글목록 -->
                                 <ul id="reply" style="list-style:none;">
                                 </ul>
@@ -430,16 +429,54 @@
                                                             class="btn btn-large">댓글작성
                                                     </button>
                                                 </div>
+                                                <div class="modal-header">
+                                                    <h4 class="modal-title">
+                                                        <span class='title-dialog'></span>번 댓글 편집창
+                                                    </h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;
+                                                    </button>
+                                                </div>
                                             </div>
                                         </th>
                                     </tr>
                                     </thead>
                                 </table>
                             </div>
+                            <div class="modal fade" id="modifyDiv">
+                                <div class="modal-dialog modal-lg">
+                                    <div class="modal-content">
+
+                                        <!-- Modal Header -->
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">
+                                                <span class='title-dialog'></span>번 댓글 편집창
+                                            </h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+
+                                        <!--   Modal body -->
+                                        <div class="modal-body">
+                                            사용자: <input class="form-control" type="text" id="userId" size="8" readonly="readonly">
+                                        </div>
+                                        <div class="modal-body">
+                                            내용: <input class="form-control" type="text" id="replyContents" size="60" name="replyContent">
+                                        </div>
+                                        <div align="center">
+                                            <button type="button"  class="btn btn-info" id="reModifyBtn">수정</button>
+                                            <button type="button"  class="btn btn-danger btn-circle btn-sm" id="reDelBtn"></button>
+                                        </div>
+                                        <!--    Modal footer -->
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-dismiss="modal">Close</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-
             </div>
             <!-- /.container-fluid -->
 
@@ -489,10 +526,7 @@
     $(document).ready(function () {
 
         var boardNo = [[${readVO.boardNo}]];
-
         $.getJSON("/replies/all/" + boardNo, function (data) {
-            console.log("결과는 = " + JSON.stringify(data));
-            console.log((data.replyList.length));
             var str = "";
 
             $(data.replyList).each(function () {
@@ -500,47 +534,133 @@
                 console.log("replyWriter!!" + replyWriter);
 
                 str += "<li data-replyNo='" + this.replyNo + "' class='replyList' style='text-align:left;'>"
-                    + "<h4>" + this.replyNo + "</h4>"
+                    + "<h6>" + this.replyNo + "번째 댓글" + "</h6>"
                     + "<h4>" + this.replyWriter + "</h4>"
                     + "<blockquote>" + this.replyContents + "</blockquote>"
-                    + "<button type='button' class='btn btn-primary' data-toggle='modal' data-target='#modifyDiv'>수정</button>"
+                    + "<button type='button' class='btn btn-primary btn-sm' data-toggle='modal' data-target='#modifyDiv'>수정</button>"
                     + "</li>"
+                    // + "<button type='button' class='btn btn-danger btn-circle btn-sm' id='replyDelete' ><i class='fas fa-trash'></i> </button>"
                     + "<hr/>";
 
                 $("#reply").html(str);
             })
         })
-    })
-    $("#submitBtn").on("click", function () {
-        var reWriter = $("#writer").val();
-        console.log("글쓴이=" + reWriter);
-        var reContents = $("#contents").val();
-        var boardNo = [[${readVO.boardNo}]]; //타임리프형식으로 써줘야한다.
-        $.ajax({
-            type: 'post',
-            url: '/replies',
-            headers: {
-                "Content-Type": "application/json",
-                "X-HTTP-Method-Override": "POST"
-            },
-            dataType: 'text', //받는부분
-            data: JSON.stringify({ //보내는부분
-                boardNo: boardNo,
-                replyWriter: reWriter,
-                replyContents: reContents
-            }),
-            success: function (result) {
-                if (result == 'Success') {
-                    $("#writer").val("");
-                    $("#content").val("");
+
+        $("#reply").on("click", ".replyList button", function () {  // 댓글 옆에 수정버튼 클릭 시 모달 창
+            var li = $(this).parent(); /* li 선택 */
+            var replyNo = li.attr("data-replyNo"); /*data-rebno값 얻어오기*/
+            //	var reContent = li.text();
+
+            //alert("댓글번호 : "+rebno+"  수정할 내용 : "+reContent);
+            $(".title-dialog").html(replyNo);
+            //	$("#reContent").val(reContent);
+            //	$("#modifyDiv").show("slow");
+
+            /*지원추가*/
+            var replyWriter = $(this).parent().find('h4').text();
+            var replyContents = $(this).prev().text();
+
+            console.log("내용");
+            console.log(replyWriter);
+            console.log(replyContents);
+
+            $('#replyWriter').val(replyWriter);
+            $('#replyContents').val(replyContents);
+
+        });
+
+        $("#reModifyBtn").on("click", function () {
+            var replyNo = $(".title-dialog").html();
+            var replyContents = $(this).parents().find('#replyContents').val();  // 댓글의 내용 가져오기
+
+            console.log("댓글넘버는:" + replyNo)
+
+            $.ajax({
+                type: 'put',
+                url: '/replies/update/' + replyNo,
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-HTTP-Method-Override": "PUT"
+                },
+                dataType: 'text',
+                data: JSON.stringify({
+                    replyNo: replyNo,
+                    replyContents: replyContents
+                }),
+                success: function (result) {
+                    console.log("result:" + result);
+                    if (result == 'Success') {
+                        alert("수정 성공!!!");
+                        //$("#modifyDiv").hide("slow");  // Modal 닫기
+                        //  $("#modifyDiv").modal('hide');  // Modal 닫기 (지원)
+                        location.reload();
+                    }
                 }
-            }
+            })
         })
+
+        $("#reDelBtn").on("click", function () {
+            var replyNo = $(".title-dialog").html();
+
+            console.log("replyNO!!" + replyNo);
+
+            $.ajax({
+                type: 'delete',
+                url: '/replies/delete/' + replyNo,
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-HTTP-Method-Override": "DELETE"
+                },
+                dataType: 'text',
+                data: JSON.stringify({
+                    replyNo: replyNo
+                }),
+                success: function (result) {
+                    console.log("result:" + result);
+                    if (result == 'Success') {
+                        alert("삭제 성공!!!");
+                        //$("#modifyDiv").hide("slow");  // Modal 닫기
+                        //  $("#modifyDiv").modal('hide');  // Modal 닫기 (지원)
+                        location.reload();
+                    }
+                }
+            })
+
+        })
+        $("#submitBtn").on("click", function () {
+            var reWriter = $("#writer").val();
+            console.log("글쓴이=" + reWriter);
+            var reContents = $("#contents").val();
+            var boardNo = [[${readVO.boardNo}]]; //타임리프형식으로 써줘야한다.
+            $.ajax({
+                type: 'post',
+                url: '/replies',
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-HTTP-Method-Override": "POST"
+                },
+                dataType: 'text', //받는부분
+                data: JSON.stringify({ //보내는부분
+                    boardNo: boardNo,
+                    replyWriter: reWriter,
+                    replyContents: reContents
+                }),
+                success: function (result) {
+                    if (result == 'Success') {
+                        $("#writer").val("");
+                        $("#content").val("");
+                    }
+                }
+            })
+        })
+
+
     })
 
 </script>
 
 <script>
+
     function deleteBoard(boardNo) {
         if (boardNo != null) {
             $(location).attr('href', '/delete?boardNo=' + boardNo);
